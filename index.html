@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIWG Project Dashboard — 30 March 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b0e13; --bg2:#12161e; --bg3:#1a1f2c; --bg4:#232a3a;
+  --text:#eaecf2; --text2:#a0a5b5; --text3:#666d80;
+  --accent:#4ecdc4; --accent2:#2a9d8f; --accent-bg:rgba(78,205,196,0.07);
+  --amber:#f0a500; --amber-bg:rgba(240,165,0,0.07);
+  --red:#ef6461; --red-bg:rgba(239,100,97,0.07);
+  --green:#6bcb77; --green-bg:rgba(107,203,119,0.07);
+  --blue:#5b9bd5; --blue-bg:rgba(91,155,213,0.07);
+  --purple:#a78bfa;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:1200px;margin:0 auto;padding:36px 28px;}
+
+.hdr{margin-bottom:28px;}
+.hdr h1{font-size:36px;font-weight:700;letter-spacing:-0.5px;}
+.hdr h1 span{color:var(--accent);}
+.hdr .date{font-size:20px;color:var(--text2);margin-top:4px;}
+
+.members{font-size:17px;color:var(--text2);margin-bottom:24px;line-height:1.8;}
+.members strong{color:var(--text);font-weight:500;}
+
+.highlights{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}
+.hl{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:17px;font-weight:500;border:1px solid var(--border);}
+.hl .d{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.hl.resolved{border-color:rgba(107,203,119,0.15);color:var(--green);}
+.hl.resolved .d{background:var(--green);box-shadow:0 0 8px rgba(107,203,119,0.4);}
+.hl.new{border-color:rgba(91,155,213,0.15);color:var(--blue);}
+.hl.new .d{background:var(--blue);box-shadow:0 0 8px rgba(91,155,213,0.4);}
+.hl.win{border-color:rgba(78,205,196,0.15);color:var(--accent);}
+.hl.win .d{background:var(--accent);box-shadow:0 0 8px rgba(78,205,196,0.4);}
+
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--border2);margin-bottom:32px;overflow-x:auto;}
+.tab{padding:14px 26px;font-size:19px;font-weight:500;cursor:pointer;color:var(--text3);border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;user-select:none;}
+.tab:hover{color:var(--text2);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.page{display:none;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;}
+.card.hero{border-color:rgba(78,205,196,0.18);background:linear-gradient(135deg,rgba(78,205,196,0.05),rgba(42,157,143,0.02));}
+.card.hero::before{content:'';position:absolute;top:0;left:0;width:5px;height:100%;background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:14px 0 0 14px;}
+.card.hero{position:relative;}
+.card h2{font-size:26px;font-weight:700;margin-bottom:6px;}
+.card h3{font-size:22px;font-weight:600;margin-bottom:8px;}
+.card .sub{font-size:18px;color:var(--text2);margin-bottom:16px;}
+.tag{display:inline-block;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:4px 14px;border-radius:20px;margin-bottom:12px;}
+.tag-endorsed{background:var(--accent-bg);color:var(--accent);}
+.tag-progress{background:var(--amber-bg);color:var(--amber);}
+.tag-blocked{background:var(--red-bg);color:var(--red);}
+.tag-done{background:var(--green-bg);color:var(--green);}
+.tag-new{background:var(--blue-bg);color:var(--blue);}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:900px){.grid2,.grid3,.grid4{grid-template-columns:1fr;}}
+
+.section-lbl{font-size:17px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);margin:24px 0 16px;display:flex;align-items:center;gap:12px;}
+.section-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Model cards - clickable */
+.model-card{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.model-card:hover{border-color:rgba(78,205,196,0.3);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.model-card .mc-head{display:flex;justify-content:space-between;align-items:center;}
+.model-card .mc-lbl{font-size:20px;font-weight:700;color:var(--accent);}
+.model-card .mc-name{font-size:18px;font-weight:600;margin-top:4px;}
+.model-card .mc-desc{font-size:16px;color:var(--text2);margin-top:4px;}
+.model-card .mc-arrow{font-size:20px;color:var(--text3);transition:transform .2s;}
+.model-card.open .mc-arrow{transform:rotate(90deg);}
+.model-card .mc-expand{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.model-card.open .mc-expand{max-height:800px;}
+
+/* Model visual schemas */
+.schema{margin-top:18px;padding-top:18px;border-top:1px solid var(--border);}
+.schema-flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;margin:16px 0;}
+.s-box{border-radius:10px;padding:12px 16px;text-align:center;min-width:110px;}
+.s-box .s-title{font-size:14px;font-weight:600;}
+.s-box .s-sub{font-size:12px;margin-top:2px;opacity:0.7;}
+.s-box.baseline{background:rgba(102,109,128,0.15);border:1px solid rgba(102,109,128,0.25);color:var(--text2);}
+.s-box.marker{background:var(--accent-bg);border:1px solid rgba(78,205,196,0.2);color:var(--accent);}
+.s-box.outcome{background:var(--amber-bg);border:1px solid rgba(240,165,0,0.2);color:var(--amber);}
+.s-box.result{background:var(--green-bg);border:1px solid rgba(107,203,119,0.2);color:var(--green);}
+.s-plus{font-size:24px;font-weight:700;color:var(--text3);padding:0 8px;}
+.s-arrow{font-size:22px;color:var(--text3);padding:0 10px;}
+.s-label{font-size:15px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;}
+.s-hypothesis{font-size:16px;color:var(--accent);text-align:center;margin-top:14px;padding:12px 16px;background:rgba(78,205,196,0.05);border-radius:10px;border:1px dashed rgba(78,205,196,0.15);}
+.s-markers-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0;}
+.s-marker-chip{padding:8px 14px;border-radius:8px;background:var(--accent-bg);border:1px solid rgba(78,205,196,0.15);font-size:14px;color:var(--accent);text-align:center;}
+.s-marker-chip.active{background:rgba(78,205,196,0.15);border-color:var(--accent);font-weight:600;}
+.s-marker-chip.dim{opacity:0.35;}
+.s-vs{display:flex;align-items:center;justify-content:center;gap:20px;margin:14px 0;flex-wrap:wrap;}
+.s-vs-box{padding:14px 20px;border-radius:10px;text-align:center;min-width:180px;}
+.s-vs-box.old{background:var(--red-bg);border:1px solid rgba(239,100,97,0.15);}
+.s-vs-box.old .s-title{color:var(--red);}
+.s-vs-box.new{background:var(--green-bg);border:1px solid rgba(107,203,119,0.15);}
+.s-vs-box.new .s-title{color:var(--green);}
+.s-vs-box .s-title{font-size:15px;font-weight:600;}
+.s-vs-box .s-sub{font-size:13px;color:var(--text2);margin-top:4px;}
+
+.methods{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.methods span{font-size:16px;padding:6px 14px;border-radius:8px;border:1px solid var(--border2);color:var(--text2);}
+
+/* Pipeline */
+.pipeline{display:flex;gap:0;overflow-x:auto;padding-bottom:10px;margin:18px 0;}
+.pipe-node{flex:1;min-width:150px;}
+.pipe-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;height:100%;position:relative;}
+.pipe-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;border-radius:12px 12px 0 0;}
+.pipe-card.s-done::before{background:var(--green);}
+.pipe-card.s-active::before{background:var(--amber);}
+.pipe-card.s-blocked::before{background:var(--red);}
+.pipe-card h4{font-size:17px;font-weight:600;margin-bottom:4px;}
+.pipe-card p{font-size:15px;color:var(--text2);line-height:1.5;}
+.pipe-card .owner{font-size:14px;color:var(--text3);margin-top:6px;}
+.pipe-arrow{display:flex;align-items:center;justify-content:center;width:32px;flex-shrink:0;font-size:22px;color:var(--text3);}
+
+/* Workflow */
+.workflow{counter-reset:step;}
+.wf-step{display:flex;gap:16px;padding:12px 0;position:relative;}
+.wf-step::before{counter-increment:step;content:counter(step);font-size:16px;font-weight:600;color:var(--bg);background:var(--accent);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.wf-step.pending::before{background:var(--bg4);color:var(--text3);border:2px solid var(--text3);}
+.wf-step.active::before{background:var(--amber);color:var(--bg);}
+.wf-step .wf-content{flex:1;}
+.wf-step .wf-title{font-size:20px;font-weight:600;}
+.wf-step .wf-desc{font-size:17px;color:var(--text2);margin-top:3px;}
+.wf-line{position:absolute;left:16px;top:44px;bottom:-12px;width:2px;background:var(--border2);}
+.wf-step:last-child .wf-line{display:none;}
+
+/* State columns */
+.state-col{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;height:100%;}
+.state-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.state-head .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.state-head h3{font-size:22px;font-weight:600;}
+.state-head .role{font-size:15px;color:var(--text3);margin-left:auto;}
+.state-people{font-size:16px;color:var(--text2);margin-bottom:14px;line-height:1.7;}
+.state-people strong{font-weight:500;color:var(--text);}
+.state-task{border-left:4px solid var(--border2);padding:8px 0 8px 14px;margin-bottom:12px;}
+.state-task h4{font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.state-task p{font-size:15px;color:var(--text2);margin-top:3px;line-height:1.5;}
+.tag-sm{font-size:12px;padding:2px 8px;}
+
+/* Projects */
+.proj{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;}
+.proj .p-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.proj .p-title{font-size:20px;font-weight:600;}
+.proj .p-lead{font-size:16px;color:var(--text3);margin-bottom:10px;}
+.proj .p-body{font-size:17px;color:var(--text2);line-height:1.7;margin-bottom:12px;}
+.proj .p-next{font-size:16px;color:var(--text3);padding-top:12px;border-top:1px solid var(--border);}
+.proj .p-next strong{color:var(--text2);font-weight:500;}
+
+/* Panels */
+.panel{border-radius:14px;padding:22px;}
+.panel.blockers{background:var(--red-bg);border:1px solid rgba(239,100,97,0.12);}
+.panel.opps{background:var(--accent-bg);border:1px solid rgba(78,205,196,0.1);}
+.panel h3{font-size:20px;font-weight:600;margin-bottom:14px;}
+.panel.blockers h3{color:var(--red);}
+.panel.opps h3{color:var(--accent);}
+.panel li{font-size:17px;color:var(--text2);padding:6px 0 6px 18px;position:relative;line-height:1.7;list-style:none;}
+.panel.blockers li::before{content:'';position:absolute;left:0;top:14px;width:7px;height:7px;border-radius:50%;background:var(--red);}
+.panel.opps li::before{content:'';position:absolute;left:0;top:14px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+
+/* Actions */
+.actions{background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:24px;margin-top:16px;}
+.actions h3{font-size:22px;font-weight:600;color:var(--accent);margin-bottom:16px;}
+.act{display:flex;gap:14px;padding:10px 0;align-items:flex-start;border-bottom:1px solid var(--border);}
+.act:last-child{border-bottom:none;}
+.act .num{font-size:16px;font-weight:600;color:var(--accent);background:rgba(78,205,196,0.1);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.act .txt{font-size:17px;color:var(--text2);line-height:1.7;}
+.act .txt strong{color:var(--text);font-weight:500;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div>
+    <h1>ACEMID <span>AI Working Group</span></h1>
+    <div class="date">Project Dashboard — Updated 30 March 2026</div>
+  </div>
+</div>
+
+<div class="members">
+  <strong>Members:</strong> Victoria Mar (Chair), Peter Soyer, Monika Janda, Anne Cust, Simone Goldinger, Zhen Yu, Adam Mothershaw, Clare Primiero, Dilki Jayasinghe, Zongyuan Ge, Sam Polkinghorne-Katz, Nima Ghahari, Sam Kahler, Yagiz Aksoy, Nayomi Arachchige, Jonathan Broder, Chengbo Zheng
+</div>
+
+<div class="highlights">
+  <div class="hl resolved"><span class="d"></span>ISIC extraction tool now working</div>
+  <div class="hl new"><span class="d"></span>Dexi 3.0 evaluation proposed</div>
+  <div class="hl new"><span class="d"></span>Freckling converter updated</div>
+  <div class="hl win"><span class="d"></span>AC/YA project formalised in minutes</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPage('overview',this)">Overview</div>
+  <div class="tab" onclick="showPage('acya',this)">AC / YA Project</div>
+  <div class="tab" onclick="showPage('states',this)">By State</div>
+  <div class="tab" onclick="showPage('projects',this)">All Projects</div>
+  <div class="tab" onclick="showPage('actions',this)">Action Items</div>
+</div>
+
+<!-- PAGE: Overview -->
+<div class="page active" id="p-overview">
+  <div class="section-lbl">Meeting highlights — 30 March 2026</div>
+  <div class="grid2">
+    <div class="card"><h3>Canfield extraction tool resolved</h3><div class="sub">Zhen successfully ran the ISIC tool on Alfred (VIC) data on Friday. Tori met with Canfield in Denver this morning — they are fully engaged. This unblocks the filter paper after months of delay.</div></div>
+    <div class="card"><h3>Dexi 3.0 — new opportunity</h3><div class="sub">Canfield launching Dexi 3.0 dermoscopy AI. MSK/Stanford clinical trial starting June–July. European regulatory approval expected within months. Tori proposes testing on ACEMID interim data. Clare confirmed existing ethics covers this.</div></div>
+    <div class="card"><h3>Interim analysis — scope narrowed</h3><div class="sub">First paper will focus on nevus count and melanoma location mapping. If freckling and UV damage data take too long, they move to a separate paper. Enough data exists without them.</div></div>
+    <div class="card"><h3>Risk calculator — two workstreams formalised</h3><div class="sub">The AIWG now formally recognises two distinct risk calculator projects: Zhen's deep learning model and the Cust/Aksoy interpretable incremental value analysis. Both complementary, running on the same data with aligned metrics.</div></div>
+  </div>
+</div>
+
+<!-- PAGE: AC/YA -->
+<div class="page" id="p-acya">
+  <div class="card hero">
+    <span class="tag tag-endorsed">Endorsed — formally in AIWG record</span>
+    <h2>Incremental Value of Image Markers vs Traditional Risk Tools</h2>
+    <div class="sub">Do ACEMID image markers break the AUC ≈ 0.70 ceiling in validated Australian melanoma risk calculators? Adding each marker to existing tools using interpretable ML methods, complementing Zhen's deep learning approach.</div>
+
+    <div class="section-lbl">Analysis design — click each model to explore</div>
+    <div class="grid4">
+
+      <!-- Model A -->
+      <div class="model-card" onclick="toggleModel(this)">
+        <div class="mc-head"><span class="mc-lbl">Model A</span><span class="mc-arrow">▸</span></div>
+        <div class="mc-name">Baseline</div>
+        <div class="mc-desc">MIA/Vuong with 5 predictors as published</div>
+        <div class="mc-expand">
+          <div class="schema">
+            <div class="schema-flow">
+              <div class="s-box baseline"><div class="s-title">MIA/Vuong</div><div class="s-sub">5 predictors</div></div>
+              <div class="s-arrow">→</div>
+              <div class="s-box outcome"><div class="s-title">Melanoma risk</div><div class="s-sub">5-year probability</div></div>
+              <div class="s-arrow">→</div>
+              <div class="s-box result"><div class="s-title">AUC ≈ 0.70</div><div class="s-sub">Current ceiling</div></div>
+            </div>
+            <div class="s-markers-row">
+              <div class="s-marker-chip active">Age</div>
+              <div class="s-marker-chip active">Sex</div>
+              <div class="s-marker-chip active">Skin colour</div>
+              <div class="s-marker-chip active">Nevus count</div>
+              <div class="s-marker-chip active">Prior melanoma</div>
+            </div>
+            <div class="s-label">The baseline against which all image-augmented models are compared.<br>External AUC matches development AUC (0.70) — robust but plateaued.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model B1-B4 -->
+      <div class="model-card" onclick="toggleModel(this)">
+        <div class="mc-head"><span class="mc-lbl">Models B1–B4</span><span class="mc-arrow">▸</span></div>
+        <div class="mc-name">Individual markers</div>
+        <div class="mc-desc">Add each image marker one at a time</div>
+        <div class="mc-expand">
+          <div class="schema">
+            <div class="schema-flow">
+              <div class="s-box baseline"><div class="s-title">MIA/Vuong</div><div class="s-sub">5 predictors</div></div>
+              <div class="s-plus">+</div>
+              <div class="s-box marker"><div class="s-title">1 image marker</div><div class="s-sub">added individually</div></div>
+              <div class="s-arrow">→</div>
+              <div class="s-box result"><div class="s-title">ΔAUC</div><div class="s-sub">per marker</div></div>
+            </div>
+            <div class="s-markers-row">
+              <div class="s-marker-chip active">B1: Nevus count</div>
+              <div class="s-marker-chip active">B2: UV damage</div>
+              <div class="s-marker-chip active">B3: Freckling</div>
+              <div class="s-marker-chip active">B4: Skin colour</div>
+            </div>
+            <div style="margin-top:14px;">
+              <div class="s-vs">
+                <div class="s-vs-box old"><div class="s-title">Self-reported</div><div class="s-sub">4-level pictogram<br>"Few / Some / Many / Very many"</div></div>
+                <span style="font-size:28px;color:var(--text3);">→</span>
+                <div class="s-vs-box new"><div class="s-title">AI-derived</div><div class="s-sub">Continuous objective score<br>from 3D total-body photography</div></div>
+              </div>
+            </div>
+            <div class="s-label">Isolates the incremental contribution of each marker.<br>SHAP values show exactly which patients benefit most from each addition.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model C -->
+      <div class="model-card" onclick="toggleModel(this)">
+        <div class="mc-head"><span class="mc-lbl">Model C</span><span class="mc-arrow">▸</span></div>
+        <div class="mc-name">Combined</div>
+        <div class="mc-desc">All image markers together</div>
+        <div class="mc-expand">
+          <div class="schema">
+            <div class="schema-flow">
+              <div class="s-box baseline"><div class="s-title">MIA/Vuong</div><div class="s-sub">5 predictors</div></div>
+              <div class="s-plus">+</div>
+              <div class="s-box marker"><div class="s-title">All 4 markers</div><div class="s-sub">combined</div></div>
+              <div class="s-arrow">→</div>
+              <div class="s-box result"><div class="s-title">Best AUC?</div><div class="s-sub">target: > 0.70</div></div>
+            </div>
+            <div class="s-markers-row">
+              <div class="s-marker-chip active">Nevus count</div>
+              <div class="s-marker-chip active">UV damage</div>
+              <div class="s-marker-chip active">Freckling</div>
+              <div class="s-marker-chip active">Skin colour</div>
+            </div>
+            <div class="s-hypothesis">Core hypothesis: The AUC 0.70 ceiling reflects the information limit of self-reported data, not the information limit of phenotype itself. Combining all objective measurements should break through.</div>
+            <div class="s-label">Super Learner ensemble captures non-linear interactions between markers that traditional Cox models miss. Decision curve analysis shows net benefit at screening-relevant thresholds.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model D -->
+      <div class="model-card" onclick="toggleModel(this)">
+        <div class="mc-head"><span class="mc-lbl">Model D</span><span class="mc-arrow">▸</span></div>
+        <div class="mc-name">Image-only</div>
+        <div class="mc-desc">No survey data at all</div>
+        <div class="mc-expand">
+          <div class="schema">
+            <div class="schema-flow">
+              <div class="s-box marker"><div class="s-title">Image markers</div><div class="s-sub">+ age + sex only</div></div>
+              <div class="s-arrow">→</div>
+              <div class="s-box outcome"><div class="s-title">Melanoma risk</div><div class="s-sub">no questionnaire</div></div>
+            </div>
+            <div class="s-markers-row">
+              <div class="s-marker-chip active">Nevus count</div>
+              <div class="s-marker-chip active">UV damage</div>
+              <div class="s-marker-chip active">Freckling</div>
+              <div class="s-marker-chip active">Skin colour</div>
+              <div class="s-marker-chip active">Age</div>
+              <div class="s-marker-chip active">Sex</div>
+              <div class="s-marker-chip dim">Questionnaire data</div>
+            </div>
+            <div class="s-hypothesis">If Model D approaches Model C performance, it suggests that a risk assessment could be derived from a single 3D photograph — no patient survey required. Major implications for scalability and screening program design.</div>
+            <div class="s-label">Directly addresses Tori Mar's question from the 16 February AIWG meeting: does survey data add value over what images can tell us?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="methods">
+      <span>Super Learner ensemble</span><span>SHAP decomposition</span><span>Decision curve analysis</span><span>Venn-ABERS calibration</span>
+    </div>
+  </div>
+
+  <!-- Dependency pipeline -->
+  <div class="section-lbl">Data dependency pipeline</div>
+  <div class="pipeline">
+    <div class="pipe-node"><div class="pipe-card s-active"><h4>MIA baseline data</h4><p>Published risk tool coefficients and original dataset</p><div class="owner">Yagiz → pending affiliation</div></div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="pipe-card s-active"><h4>Nevus count</h4><p>Script 1 distributed. Adam adding lesion ID matching</p><div class="owner">Adam / Dilki</div></div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="pipe-card s-active"><h4>UV damage</h4><p>Script exists. Patient list needed from Sam</p><div class="owner">Zhen / Sam PK</div></div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="pipe-card s-active"><h4>Freckling</h4><p>CR2→JPEG fixed. Adam updating script</p><div class="owner">Adam / Sam Kahler</div></div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="pipe-card s-active"><h4>Skin colour</h4><p>L*a*b* from Vectra. Chantelle validating</p><div class="owner">Dilki / Chantelle</div></div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="pipe-card s-blocked"><h4>Outcomes</h4><p>~100 slides still being scanned for path review</p><div class="owner">Pathology team</div></div></div>
+  </div>
+
+  <!-- Workflow -->
+  <div class="section-lbl">Workflow — next steps</div>
+  <div class="card">
+    <div class="workflow">
+      <div class="wf-step active"><div class="wf-line"></div><div class="wf-content"><div class="wf-title">Finalise MIA affiliation</div><div class="wf-desc">Complete paperwork with Pascale and Pablo. Gating step for all NSW data extraction and baseline risk data access.</div></div></div>
+      <div class="wf-step active"><div class="wf-line"></div><div class="wf-content"><div class="wf-title">Extract MIA baseline risk data</div><div class="wf-desc">Access MIA workstations to extract baseline risk factor data for the NSW cohort. Published predictor variables from Vuong et al. 2016.</div></div></div>
+      <div class="wf-step active"><div class="wf-line"></div><div class="wf-content"><div class="wf-title">Map data dictionaries to model predictors</div><div class="wf-desc">Cross-reference ACEMID REDCap data dictionaries against Vuong 2016, Olsen 2018, and Whiteman 2025 variable definitions.</div></div></div>
+      <div class="wf-step pending"><div class="wf-line"></div><div class="wf-content"><div class="wf-title">Receive nevus count data from QLD/VIC</div><div class="wf-desc">Tori confirmed this will be the first image marker dataset provided. Model B1 can begin immediately on receipt.</div></div></div>
+      <div class="wf-step pending"><div class="wf-line"></div><div class="wf-content"><div class="wf-title">Receive UV damage and freckling data</div><div class="wf-desc">UV script exists (needs patient list). Freckling script being updated. These enable Models B2 and B3.</div></div></div>
+      <div class="wf-step pending"><div class="wf-line"></div><div class="wf-content"><div class="wf-title">Run incremental value analysis</div><div class="wf-desc">Execute Models A through D. Super Learner pipeline with SHAP decomposition, decision curves, and Venn-ABERS calibration.</div></div></div>
+      <div class="wf-step pending"><div class="wf-content"><div class="wf-title">Dual analysis — original vs pathology-reviewed</div><div class="wf-desc">Run all models twice using both outcome definitions. Reclassification impact is a separate publishable finding.</div></div></div>
+    </div>
+  </div>
+
+  <div class="section-lbl">Complementary approaches</div>
+  <div class="grid2">
+    <div class="card"><h3>Cust / Aksoy — Interpretable</h3><div class="sub">Named features added to validated risk tools. Super Learner with SHAP explainability. Shows exactly which markers improve prediction and for whom. Decision curves directly inform screening threshold policy.</div></div>
+    <div class="card"><h3>Zhen / Ge — Deep learning</h3><div class="sub">End-to-end phenotype model from avatars. Potentially higher accuracy but less interpretable. Needs ~200 per risk group for training. Same population and metrics enables direct comparison.</div></div>
+  </div>
+</div>
+
+<!-- PAGE: By State -->
+<div class="page" id="p-states">
+  <div class="grid3">
+    <div class="state-col">
+      <div class="state-head"><div class="dot" style="background:var(--amber)"></div><h3>QLD (UQ)</h3><div class="role">Algorithms</div></div>
+      <div class="state-people"><strong>Peter Soyer</strong>, <strong>Simone Goldinger</strong>, <strong>Adam Mothershaw</strong>, <strong>Clare Primiero</strong>, <strong>Sam Kahler</strong>, <strong>Dilki</strong></div>
+      <div class="state-task"><h4>Script 1: Nevus count <span class="tag tag-done tag-sm">ready</span></h4><p>CSV output from JSON. Distributed. Adam adding lesion ID matching step to link to REDCap melanoma outcomes.</p></div>
+      <div class="state-task"><h4>Script 2: Freckling <span class="tag tag-progress tag-sm">updating</span></h4><p>CR2→JPEG converter updated by Canfield. Adam incorporating and sending to Zhen shortly.</p></div>
+      <div class="state-task"><h4>UV damage <span class="tag tag-progress tag-sm">list needed</span></h4><p>Zhen has published script. Sam to send patient list. Baseline images only (agreed this meeting).</p></div>
+      <div class="state-task"><h4>REDCap cleaning <span class="tag tag-progress tag-sm">ongoing</span></h4><p>QLD queries reduced. Herb site RAs working on remaining ~190 queries.</p></div>
+    </div>
+    <div class="state-col">
+      <div class="state-head"><div class="dot" style="background:var(--purple)"></div><h3>VIC (Monash)</h3><div class="role">Infrastructure</div></div>
+      <div class="state-people"><strong>Victoria Mar</strong>, <strong>Zhen Yu</strong>, <strong>Sam P-K</strong>, <strong>Nima</strong>, <strong>Zongyuan Ge</strong></div>
+      <div class="state-task"><h4>ISIC extraction <span class="tag tag-done tag-sm">working</span></h4><p>Fixed Friday. ISIC and Vectra DB tools both working on Alfred data. Major breakthrough.</p></div>
+      <div class="state-task"><h4>Filter paper <span class="tag tag-progress tag-sm">unblocked</span></h4><p>Zhen to run models on Alfred data. Presenting results at next meeting.</p></div>
+      <div class="state-task"><h4>DL risk model <span class="tag tag-progress tag-sm">design</span></h4><p>~200 per risk group needed. High-risk = melanoma or >100 nevi. Sam identifying eligible cohort.</p></div>
+      <div class="state-task"><h4>Dexi 3.0 <span class="tag tag-new tag-sm">new</span></h4><p>Canfield Dexi 3.0 to be tested on ACEMID data. Ethics confirmed. Canfield team to present to AIWG.</p></div>
+    </div>
+    <div class="state-col">
+      <div class="state-head"><div class="dot" style="background:var(--accent)"></div><h3>NSW (USyd/MIA)</h3><div class="role">Risk prediction</div></div>
+      <div class="state-people"><strong>Anne Cust</strong>, <strong>Yagiz Aksoy</strong>, <strong>Grace Kwaan</strong>, <strong>Pablo</strong>, <strong>Ryan Sullivan</strong></div>
+      <div class="state-task"><h4>Incremental value <span class="tag tag-endorsed tag-sm">endorsed</span></h4><p>AC/YA. Formally in AIWG minutes. Tori to provide nevus count data first.</p></div>
+      <div class="state-task"><h4>MIA affiliation <span class="tag tag-progress tag-sm">paperwork</span></h4><p>Yagiz to finalise with Pascale/Pablo. Enables workstation access for data extraction.</p></div>
+      <div class="state-task"><h4>NSW extraction <span class="tag tag-progress tag-sm">awaiting</span></h4><p>Grace coordinating Westmead. Ryan/team at MIA. Yagiz to assist once affiliated.</p></div>
+      <div class="state-task"><h4>Dual-analysis <span class="tag tag-endorsed tag-sm">proposed</span></h4><p>Two analyses per model: original diagnosis vs pathology-reviewed. Reclassification rates as separate finding.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: All Projects -->
+<div class="page" id="p-projects">
+  <div class="grid2">
+    <div class="proj"><div class="p-head"><span class="p-title">Interim analysis paper</span><span class="tag tag-progress tag-sm">progressing</span></div><div class="p-lead">Lead: Dilki / Tori / Monika</div><div class="p-body">Descriptive overview of first 2,000 participants. Scope narrowed to nevus count + melanoma location heat map. Freckling/UV to a separate paper if delayed. Adam updating Script 1 to include lesion ID matching.</div><div class="p-next"><strong>Next meeting:</strong> Adam and Dilki presenting nevus count extraction outputs</div></div>
+    <div class="proj"><div class="p-head"><span class="p-title">AI filter paper</span><span class="tag tag-done tag-sm">unblocked</span></div><div class="p-lead">Lead: Zhen / Tori</div><div class="p-body">Comparing AI filter algorithms across populations. ISIC tool now working on Alfred data. Canfield fully engaged after Denver meeting.</div><div class="p-next"><strong>Next meeting:</strong> Zhen presenting filter paper results on Alfred data</div></div>
+    <div class="proj"><div class="p-head"><span class="p-title">Freckling validation</span><span class="tag tag-progress tag-sm">progressing</span></div><div class="p-lead">Lead: Sam Kahler / Clare / Adam</div><div class="p-body">External validation of freckling CNN. CR2→JPEG converter updated by Canfield. Adam incorporating into script. Once sent to Zhen, Alfred data can be extracted for annotation.</div><div class="p-next"><strong>Next:</strong> Adam sends updated script to Zhen → extract Alfred data → annotate → validate</div></div>
+    <div class="proj"><div class="p-head"><span class="p-title">Deep learning risk model</span><span class="tag tag-progress tag-sm">design</span></div><div class="p-lead">Lead: Zhen Yu / Zongyuan Ge</div><div class="p-body">End-to-end phenotype model from avatars. ~200 per risk group. High-risk = melanoma or >100 nevi. Using completed/withdrawn participants to avoid Automate Me contamination.</div><div class="p-next"><strong>Next:</strong> Sam identifies eligible Alfred cohort. Zhen tests risk label definitions</div></div>
+    <div class="proj"><div class="p-head"><span class="p-title">Dexi 3.0 evaluation</span><span class="tag tag-new tag-sm">new</span></div><div class="p-lead">Lead: Tori / Canfield</div><div class="p-body">Test Canfield Dexi 3.0 on ACEMID interim data with path-reviewed lesions. MSK/Stanford trial June–July. European approval expected within months. Ethics confirmed under existing protocol.</div><div class="p-next"><strong>Next:</strong> Canfield team to present to AIWG. Dermoscopy images to be centralised</div></div>
+    <div class="proj"><div class="p-head"><span class="p-title">Pathology pilot paper</span><span class="tag tag-progress tag-sm">cleaning</span></div><div class="p-lead">Lead: Peter / Simone / Carla</div><div class="p-body">Central pathology review — examining overturned melanoma diagnoses. ~100 slides still being scanned. Reclassification rates feed into AC/YA dual-analysis.</div><div class="p-next"><strong>Next:</strong> Continue cleaning. Priority participant list established</div></div>
+    <div class="proj"><div class="p-head"><span class="p-title">Primary prevention substudy</span><span class="tag tag-new tag-sm">new</span></div><div class="p-lead">Lead: Monika / Cancer Council Victoria</div><div class="p-body">AI automation of participant scripts. Sunburn questions missing from follow-up surveys. Options: amend core ethics or run as separate substudy with own consent and REDCap event.</div><div class="p-next"><strong>Next:</strong> Monika to determine ethics pathway</div></div>
+    <div class="proj"><div class="p-head"><span class="p-title">Spatial distribution</span><span class="tag tag-progress tag-sm">in progress</span></div><div class="p-lead">Lead: Dilki / Nima</div><div class="p-body">Nevus spatial distribution (back-only for interim). Nima's satellite naevi (OR ~7 for high-risk). Melanoma location heat map proposed for interim paper.</div><div class="p-next"><strong>Next:</strong> Adam/Dilki extraction outputs. Dilki coordinating with Chantelle on skin colour</div></div>
+  </div>
+</div>
+
+<!-- PAGE: Actions -->
+<div class="page" id="p-actions">
+  <div class="grid2">
+    <div class="panel blockers"><h3>Remaining blockers</h3><ul>
+      <li>MIA affiliation paperwork not yet completed — gating item for NSW data extraction and baseline risk data access</li>
+      <li>Freckling script not yet distributed — Adam incorporating Canfield converter fix now</li>
+      <li>UV damage patient list not yet sent to Zhen — Sam PK to provide</li>
+      <li>~100 melanoma slides still being scanned for central pathology review</li>
+      <li>MIA risk percentages not recorded in REDCap for most participants — requires manual extraction</li>
+      <li>Training set for Zhen's model needs careful selection to avoid Automate Me contamination</li>
+    </ul></div>
+    <div class="panel opps"><h3>Opportunities</h3><ul>
+      <li>Nevus count data available imminently — Model B1 analysis can begin with this single marker</li>
+      <li>AC/YA project now formally distinct in AIWG minutes — standing agenda item secured</li>
+      <li>Dexi 3.0 evaluation could be high-impact — potential role in evaluation design</li>
+      <li>Dual-analysis design (original vs pathology-reviewed) — reclassification rates as separate publication</li>
+      <li>Canfield meeting in Denver = renewed engagement — infrastructure issues should resolve faster</li>
+      <li>MIA baseline data enables risk calculator rebuild with modern ML — independent of ACEMID timeline</li>
+    </ul></div>
+  </div>
+
+</div>
+
+</div>
+<script>
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  el.classList.add('active');
+}
+function toggleModel(el){
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>
